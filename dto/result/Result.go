@@ -1,4 +1,4 @@
-package dto
+package result
 
 type Result struct {
 	Success  bool

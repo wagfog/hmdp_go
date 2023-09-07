@@ -3,7 +3,7 @@ package utils
 import "regexp"
 
 func IsPhoneInvalid(phone string) bool {
-	reg := `^1([38][0-9]|14[579]|5[^4]|16[6]|7[1-35-8]|9[189])\d{8}$`
+	reg := `^1([38][0-9]|14[57]|5[^4])\d{8}$`
 	rgx := regexp.MustCompile(reg)
-	return rgx.MatchString(phone)
+	return !rgx.MatchString(phone)
 }
