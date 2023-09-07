@@ -9,7 +9,7 @@ func InitRouter() *gin.Engine {
 	r := gin.New()
 
 	userGroup := r.Group("/user")
-	userGroup.POST("/code", user.Login)
+	userGroup.POST("/code", user.SendCode)
 
 	return r
 }

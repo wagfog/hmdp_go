@@ -19,11 +19,21 @@ var (
 	JWTSecret string
 )
 
-func init() {
+type Redis struct {
+	Host        string
+	Password    string
+	MaxIdle     int
+	MaxActive   int
+	IdleTimeout time.Duration
+}
+
+var RedisSetting = &Redis{}
+
+func Init() {
 	var err error
-	Cfg, err = ini.Load("config/app.ini")
+	Cfg, err = ini.Load("/home/swag/go/src/hmdp/config/app.ini")
 	if err != nil {
-		log.Fatal("Fail to parse 'config/app.ini' : %v ", err)
+		log.Fatal("Fail to parse 'config/app.ini' : ", err)
 	}
 	Load_Base()
 	Load_Server()
@@ -35,13 +45,17 @@ func Load_Base() {
 }
 
 func Load_Server() {
-	sec, err := Cfg.Section("server")
-	if err != nil {
-		log.Fatal("Fail to get section 'server': %v", err)
-	}
+	sec := Cfg.Section("server")
+	// if err != nil {
+	// 	log.Fatal("Fail to get section 'server': %v", err)
+	// }
+
+	mapTo("redis", RedisSetting)
+
 	HTTPPort = sec.Key("HTTP_PORT").MustInt(8081)
 	ReadTimeout = time.Duration(sec.Key("READ_TIMEOUT").MustInt(60)) * time.Second
 	WriteTImeout = time.Duration(sec.Key("WRITE_TIMEOUT").MustInt(60)) * time.Second
+	RedisSetting.IdleTimeout = RedisSetting.IdleTimeout * time.Second
 }
 
 func Load_APP() {
@@ -50,4 +64,11 @@ func Load_APP() {
 		log.Fatal("Fail to get section 'server' : %v", err)
 	}
 	sec.Key("JWT_SECRET").MustString("!@)*#)!@U#@*!@!)")
+}
+
+func mapTo(section string, v interface{}) {
+	err := Cfg.Section(section).MapTo(v)
+	if err != nil {
+		log.Fatal("Cfg.Maptp %s err: %v", section, err)
+	}
 }
