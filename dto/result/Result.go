@@ -16,7 +16,7 @@ func NewResult(success bool, errorMsg string, data interface{}, total int64) *Re
 	}
 }
 
-func (result Result) ok() *Result {
+func (result Result) Ok() *Result {
 	return NewResult(true, "", nil, 0)
 }
 
