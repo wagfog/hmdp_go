@@ -1,10 +1,34 @@
 package result
 
 type Result struct {
-	Success  bool
-	ErrorMsg string
-	Data     interface{}
-	Total    int64
+	Success  bool        `json:"success"`
+	ErrorMsg string      `json:"erromsg"`
+	Data     interface{} `json:"data"`
+	Total    int64       `json:"total"`
+}
+
+type ResultOk struct {
+	Success bool        `json:"success"`
+	Data    interface{} `json:"data"`
+}
+
+type ResultFail struct {
+	Success  bool   `json:"success"`
+	ErrorMsg string `json:"errormsg"`
+}
+
+func NewResultOk(data interface{}) *ResultOk {
+	return &ResultOk{
+		Success: true,
+		Data:    data,
+	}
+}
+
+func NewResultFail(errorMsg string) *ResultFail {
+	return &ResultFail{
+		Success:  false,
+		ErrorMsg: errorMsg,
+	}
 }
 
 func NewResult(success bool, errorMsg string, data interface{}, total int64) *Result {

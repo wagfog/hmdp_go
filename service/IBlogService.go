@@ -6,9 +6,9 @@ import (
 )
 
 type IBLogService interface {
-	queryHotBlog(current int32) result.Result
-	queryBlogById(id int64) result.Result
-	likeBlog(id int64) result.Result
-	saveBLog(blog models.Blog) result.Result
-	queryBlogOfFollow(max int64, offset int32) result.Result
+	QueryHotBlog(current int32) result.Result
+	QueryBlogById(id int64) result.Result
+	LikeBlog(id int64) result.Result
+	SaveBLog(blog models.Blog) result.Result
+	QueryBlogOfFollow(max int64, offset int32) result.Result
 }

@@ -11,6 +11,7 @@ import (
 	"github.com/wagfog/hmdp_go/config/gredis"
 	"github.com/wagfog/hmdp_go/dto"
 	"github.com/wagfog/hmdp_go/dto/result"
+	"github.com/wagfog/hmdp_go/models"
 	"github.com/wagfog/hmdp_go/utils"
 )
 
@@ -41,8 +42,34 @@ func (userServiceImpl *UserServiceImpl) SendCode(phone string, sess sessions.Ses
 	fmt.Println("the code is", code)
 	return *result.Ok()
 }
-func (userServiceImpl *UserServiceImpl) Login(loginForm dto.LoginFormDTO, sess sessions.Session) result.Result {
-	return *result.Ok()
+func (userServiceImpl *UserServiceImpl) Login(loginForm dto.LoginFormDTO2, sess sessions.Session) result.Result {
+	phone := loginForm.GetPhone()
+	if utils.IsPhoneInvalid(phone) {
+		return *result.Fail("phone error!")
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 500*time.Millisecond)
+	defer cancel()
+	cacheCode, err := gredis.Client.Get(ctx, utils.LOGIN_CODE_KEY+phone).Result()
+	if err != nil {
+		fmt.Println("redis get cacheCode from redis error!", err)
+	}
+	code := loginForm.GetCode()
+
+	if cacheCode == "" || code != cacheCode {
+		return *result.Fail("cacheCode error or cacheCode is empty")
+	}
+
+	user := models.GetUserByPhone(phone)
+	if user == nil {
+		user, err = models.CreateUser(phone)
+		if err != nil || user == nil {
+			return *result.Fail("create user Fail" + err.Error())
+		}
+	}
+
+	return *result.OkWithData(user)
+
 }
 func (userServiceImpl *UserServiceImpl) Sign() result.Result {
 	return *result.Ok()

@@ -17,3 +17,9 @@ type Blog struct {
 	CreateTime time.Time `json:"createTime"`
 	UpdateTime time.Time `json:"updateTime"`
 }
+
+func QueryBlogHot(current int32, maxPage int32) []Blog {
+	var blogs []Blog
+	db.Table("tb_blog").Order("liked").Offset((current - 1) * maxPage).Limit(maxPage).Find(&blogs)
+	return blogs
+}

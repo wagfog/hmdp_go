@@ -8,7 +8,7 @@ import (
 
 type IUserService interface {
 	SendCode(phone string, sess sessions.Session) result.Result
-	Login(loginForm dto.LoginFormDTO, sess sessions.Session) result.Result
+	Login(loginForm dto.LoginFormDTO2, sess sessions.Session) result.Result
 	Sign() result.Result
 	SignCount() result.Result
 }

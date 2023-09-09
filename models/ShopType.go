@@ -10,3 +10,9 @@ type ShopType struct {
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }
+
+func GetShopType() []ShopType {
+	var st []ShopType
+	db.Table("tb_shop_type").Order("sort").Find(&st)
+	return st
+}
