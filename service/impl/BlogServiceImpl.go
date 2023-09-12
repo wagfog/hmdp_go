@@ -21,9 +21,21 @@ func (BlogServiceImpl *BlogServiceImpl) QueryHotBlog(current int32) result.Resul
 	}
 	return *result.OkWithData(blogs)
 }
-func (BlogServiceImpl *BlogServiceImpl) QueryBlogById(id int64) result.Result {
-	return *result.Ok()
+func (BlogServiceImpl *BlogServiceImpl) QueryBlogByUserId(id int64, current int) result.Result {
+	blogs := models.QueryBlogByUser(id, current)
+	return *result.OkWithData(blogs)
 }
+
+func (BlogServiceImpl *BlogServiceImpl) QueryBlogById(id int) result.Result {
+	blog := models.QueryBlogById(id)
+	if blog == nil {
+		return *result.Fail("笔记不存在!")
+	}
+	queryBlogUser(blog)
+	isBlogLiked(blog)
+	return *result.OkWithData(blog)
+}
+
 func (BlogServiceImpl *BlogServiceImpl) LikeBlog(id int64) result.Result {
 	return *result.Ok()
 }

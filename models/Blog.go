@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/wagfog/hmdp_go/utils"
+)
 
 type Blog struct {
 	ID         int64     `json:"id" gorm:"primaryKey;autoIncrement"`
@@ -22,4 +26,16 @@ func QueryBlogHot(current int32, maxPage int32) []Blog {
 	var blogs []Blog
 	db.Table("tb_blog").Order("liked").Offset((current - 1) * maxPage).Limit(maxPage).Find(&blogs)
 	return blogs
+}
+
+func QueryBlogByUser(id int64, current int) []Blog {
+	var blogs []Blog
+	db.Table("tb_blog").Where("user_id = ?", id).Offset((current - 1) * utils.MAX_PAGE_SIZE).Limit(utils.MAX_PAGE_SIZE).Find(&blogs)
+	return blogs
+}
+
+func QueryBlogById(id int) *Blog {
+	var blogs Blog
+	db.Table("tb_blog").Where("id = ?", id).First(&blogs)
+	return &blogs
 }
