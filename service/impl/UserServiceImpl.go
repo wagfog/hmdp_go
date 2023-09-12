@@ -40,6 +40,7 @@ func (userServiceImpl *UserServiceImpl) SendCode(phone string, sess sessions.Ses
 	code := strconv.Itoa(randomNUm)
 	gredis.Client.Set(ctx, "login:code:"+phone, code, 2*time.Minute)
 	fmt.Println("the code is", code)
+	// st, _ := utils.GenerateToken("phone")
 	return *result.Ok()
 }
 func (userServiceImpl *UserServiceImpl) Login(loginForm dto.LoginFormDTO2, sess sessions.Session) result.Result {
@@ -67,7 +68,11 @@ func (userServiceImpl *UserServiceImpl) Login(loginForm dto.LoginFormDTO2, sess 
 			return *result.Fail("create user Fail" + err.Error())
 		}
 	}
-
+	// jwtS, err := utils.GenerateToken(phone)
+	// if err != nil {
+	// 	fmt.Println("jwt error")
+	// 	return *result.Fail("get token error")
+	// }
 	return *result.OkWithData(user)
 
 }
@@ -77,4 +82,8 @@ func (userServiceImpl *UserServiceImpl) Sign() result.Result {
 
 func (userServiceImpl *UserServiceImpl) SignCount() result.Result {
 	return *result.Ok()
+}
+
+func (UserServiceImpl *UserServiceImpl) GetUserById(id int64) models.User {
+	return *models.GetUserById(id)
 }

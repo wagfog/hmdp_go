@@ -29,6 +29,12 @@ func GetUserByPhone(phone string) *User {
 	return &u
 }
 
+func GetUserById(id int64) *User {
+	var u User
+	db.Table("tb_user").Where("id = ?", id).First(&u)
+	return &u
+}
+
 func CreateUser(phone string) (*User, error) {
 	var u User
 	err := db.Transaction(func(tx *gorm.DB) error {

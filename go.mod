@@ -5,12 +5,18 @@ go 1.20
 require github.com/gin-gonic/gin v1.9.1
 
 require (
+	github.com/boj/redistore v0.0.0-20180917114910-cd5dcc76aeff // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
+	github.com/garyburd/redigo v1.6.4 // indirect
+	github.com/gin-contrib/sessions v0.0.5 // indirect
 	github.com/go-redis/redis/v8 v8.11.5 // indirect
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
+	github.com/gomodule/redigo v2.0.0+incompatible // indirect
 	github.com/google/subcommands v1.0.1 // indirect
 	github.com/google/wire v0.5.0 // indirect
+	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/gorilla/sessions v1.2.1 // indirect
 	github.com/jinzhu/gorm v1.9.16 // indirect
@@ -18,6 +24,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/mod v0.8.0 // indirect
 	golang.org/x/tools v0.6.0 // indirect
+	gopkg.in/boj/redistore.v1 v1.0.0-20160128113310-fc113767cd6b // indirect
 )
 
 require (
