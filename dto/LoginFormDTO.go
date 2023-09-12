@@ -7,8 +7,8 @@ type LoginFormDTO struct {
 }
 
 type LoginFormDTO2 struct {
-	Phone string
-	Code  string
+	Phone string `json:"phone"`
+	Code  string `json:"code"`
 }
 
 func (loginFOrmDTO *LoginFormDTO2) GetPhone() string {

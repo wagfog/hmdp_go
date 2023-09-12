@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/gorilla/sessions"
+	"github.com/gin-contrib/sessions"
 	"github.com/wagfog/hmdp_go/dto"
 	"github.com/wagfog/hmdp_go/dto/result"
 	"github.com/wagfog/hmdp_go/models"

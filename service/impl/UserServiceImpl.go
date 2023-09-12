@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gorilla/sessions"
+	"github.com/gin-contrib/sessions"
 	"github.com/wagfog/hmdp_go/config/gredis"
 	"github.com/wagfog/hmdp_go/dto"
 	"github.com/wagfog/hmdp_go/dto/result"
@@ -73,7 +73,11 @@ func (userServiceImpl *UserServiceImpl) Login(loginForm dto.LoginFormDTO2, sess 
 	// 	fmt.Println("jwt error")
 	// 	return *result.Fail("get token error")
 	// }
-	return *result.OkWithData(user)
+	return *result.OkWithData(dto.UserDTO{
+		Id:       user.ID,
+		NickName: user.NickName,
+		Icon:     user.Icon,
+	})
 
 }
 func (userServiceImpl *UserServiceImpl) Sign() result.Result {

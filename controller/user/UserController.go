@@ -6,10 +6,11 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/sessions"
 	"github.com/wagfog/hmdp_go/dto"
 	"github.com/wagfog/hmdp_go/dto/result"
+	"github.com/wagfog/hmdp_go/models"
 	"github.com/wagfog/hmdp_go/service"
 	"github.com/wagfog/hmdp_go/service/impl"
 	"github.com/wagfog/hmdp_go/utils"
@@ -24,12 +25,14 @@ func Init() {
 }
 
 func SendCode(c *gin.Context) {
+	session := sessions.Default(c)
 	phone := c.Query("phone")
 	if utils.IsPhoneInvalid(phone) {
 		c.JSON(http.StatusBadRequest, result.Fail("error phone number"))
 		return
 	}
-	ans := UserService.SendCode(phone, *sessions.NewSession(nil, ""))
+	session.Save()
+	ans := UserService.SendCode(phone, session)
 	c.JSON(http.StatusOK, ans)
 }
 
@@ -40,6 +43,7 @@ func Login(c *gin.Context) {
 	// }
 
 	// loginFOrmDTO := dto.NewLoginFOrmDTO(c.PostForm("phone"), c.PostForm("code"), c.PostForm("password"))
+	session := sessions.Default(c)
 	var loginFOrmDTO dto.LoginFormDTO2
 	err := c.ShouldBindJSON(&loginFOrmDTO)
 	if err != nil {
@@ -54,23 +58,32 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	ans := UserService.Login(loginFOrmDTO, *sessions.NewSession(nil, ""))
+	ans := UserService.Login(loginFOrmDTO, session)
+	cookieValue, _ := utils.GenerateRandomString(10)
+	c.SetCookie("user_cookie", cookieValue, 60*60*3, "/", "localhost", false, true)
+	session.Set(cookieValue, loginFOrmDTO.Phone)
+	session.Save()
 	c.JSON(http.StatusOK, ans)
 }
 
 func Me(c *gin.Context) {
-	u := dto.UserDTO{
-		Id:       4,
-		NickName: "user_slxaxy2au9f3tanffaxr",
-		Icon:     "",
+	sessison := sessions.Default(c)
+	cookieValue, err := c.Cookie("user_cookie")
+	if err != nil {
+		fmt.Println("get cookie error", err)
 	}
-	fmt.Println("use this me")
-	udto := dto.UserDTO{
-		Id:       u.Id,
+	fmt.Println("cookie:", cookieValue)
+	phone := sessison.Get(cookieValue)
+	if phone == nil {
+		return
+	}
+	fmt.Println("phone:", phone.(string))
+	u := models.GetUserByPhone(phone.(string))
+	c.JSON(http.StatusOK, result.OkWithData(dto.UserDTO{
+		Id:       u.ID,
 		NickName: u.NickName,
 		Icon:     u.Icon,
-	}
-	c.JSON(http.StatusOK, result.OkWithData(udto))
+	}))
 }
 
 func Info(c *gin.Context) {
@@ -79,6 +92,7 @@ func Info(c *gin.Context) {
 	id, _ := strconv.Atoi(sid)
 	if id <= 0 {
 		c.JSON(http.StatusOK, result.Ok())
+		return
 	}
 	fmt.Println(sid)
 	u := UserService.GetUserById(int64(id))
@@ -99,5 +113,6 @@ func QueryUserById(c *gin.Context) {
 }
 
 func Logout(c *gin.Context) {
+	c.SetCookie("user_cookie", "", -1, "/", "localhost", false, true)
 	c.JSON(http.StatusOK, result.Ok())
 }

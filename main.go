@@ -6,6 +6,7 @@ import (
 	"github.com/wagfog/hmdp_go/controller"
 	"github.com/wagfog/hmdp_go/controller/user"
 	"github.com/wagfog/hmdp_go/models"
+	"github.com/wagfog/hmdp_go/utils"
 )
 
 func main() {
@@ -13,6 +14,7 @@ func main() {
 	models.Init()
 	gredis.Setup()
 	user.Init()
+	utils.InitRedistore()
 	server := controller.InitRouter()
 	server.Run()
 }
