@@ -3,7 +3,7 @@ package models
 import "time"
 
 type ShopType struct {
-	ID         int64     `gorm:"primaryKey;autoIncrement"`
+	ID         int64     `json:"id" gorm:"primaryKey;autoIncrement"`
 	Name       string    `json:"name"`
 	Icon       string    `json:"icon"`
 	Sort       int       `json:"sort"`

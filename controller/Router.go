@@ -25,6 +25,9 @@ func InitRouter() *gin.Engine {
 	shopTypeGroup := r.Group("/shop-type")
 	shopTypeGroup.GET("/list", shop.ShopTypeController)
 
+	shopGroup := r.Group("/shop")
+	shopGroup.GET("/of/type", shop.QueryShopByType)
+
 	blogGroup := r.Group("/blog")
 	blogGroup.GET("/hot", blog.QueryHotBlogController)
 	blogGroup.GET("/of/me", blog.QueryMyBlog)
