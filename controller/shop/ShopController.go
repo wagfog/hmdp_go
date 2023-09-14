@@ -53,3 +53,13 @@ func QueryShopById(c *gin.Context) {
 	res := shopService.QueryById(int64(id))
 	c.JSON(http.StatusOK, res)
 }
+
+/**
+* 根据商铺名称关键字分页查询商铺信息
+* @param name 商铺名称关键字
+* @param current 页码
+* @return 商铺列表
+ */
+func QueryShopByName(c *gin.Context) {
+
+}

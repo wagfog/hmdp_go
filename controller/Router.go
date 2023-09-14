@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/wagfog/hmdp_go/controller/blog"
+	"github.com/wagfog/hmdp_go/controller/follow"
 	"github.com/wagfog/hmdp_go/controller/shop"
 	"github.com/wagfog/hmdp_go/controller/user"
 	"github.com/wagfog/hmdp_go/utils"
@@ -34,5 +35,9 @@ func InitRouter() *gin.Engine {
 	blogGroup.GET("/of/me", blog.QueryMyBlog)
 	blogGroup.GET("/:id", blog.QueryBlogById)
 	blogGroup.GET("/of/user", blog.QueryBlogByUserId)
+
+	followGroup := r.Group("/follow")
+	followGroup.PUT("/:id/:isFollow", follow.Follow)
+	followGroup.GET("/or/not/:id", follow.IsFollow)
 	return r
 }
