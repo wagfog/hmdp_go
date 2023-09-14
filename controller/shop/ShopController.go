@@ -1,10 +1,12 @@
 package shop
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/wagfog/hmdp_go/dto/result"
 	"github.com/wagfog/hmdp_go/service"
 	"github.com/wagfog/hmdp_go/service/impl"
 )
@@ -32,5 +34,22 @@ func QueryShopByType(c *gin.Context) {
 	X, _ := strconv.ParseFloat(x, 64)
 	Y, _ := strconv.ParseFloat(y, 64)
 	res := shopService.QueryShopByType(tid, current, X, Y)
+	c.JSON(http.StatusOK, res)
+}
+
+/**
+* 根据id查询商铺信息
+* @param id 商铺id
+* @return 商铺详情数据
+ */
+func QueryShopById(c *gin.Context) {
+	sid := c.Param("id")
+	fmt.Println(sid)
+	id, err := strconv.Atoi(sid)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusBadRequest, result.Fail(err.Error()))
+	}
+	res := shopService.QueryById(int64(id))
 	c.JSON(http.StatusOK, res)
 }

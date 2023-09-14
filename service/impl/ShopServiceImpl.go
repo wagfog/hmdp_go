@@ -2,9 +2,11 @@ package impl
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/wagfog/hmdp_go/config/gredis"
@@ -21,7 +23,64 @@ func NewShopService() *ShopServiceImpl {
 }
 
 func (shopServiceImpl *ShopServiceImpl) QueryById(id int64) result.Result {
-	return *result.Fail("not finish")
+	shop, err := queruWithMutex(id)
+	if shop == nil {
+		return *result.Fail("不存在该商铺信息！")
+	}
+	if err != nil {
+		return *result.Fail(err.Error())
+	}
+	return *result.OkWithData(*shop)
+}
+
+// 互斥锁解决缓存穿透的方法
+func queruWithMutex(id int64) (*models.Shop, error) {
+	key := utils.CACHE_SHOP_KEY + strconv.Itoa(int(id))
+	fmt.Println(key)
+	shopJson, err := gredis.Client.Get(context.Background(), key).Result()
+	if err == nil {
+		var shop models.Shop
+		fmt.Println(shopJson)
+		er := json.Unmarshal([]byte(shopJson), &shop)
+		fmt.Println(shop)
+		if er != nil {
+			fmt.Println(er)
+			return nil, er
+		}
+		return &shop, nil
+	}
+	fmt.Println("not get any")
+	//获取互斥锁
+	LockKey := utils.LOCK_SHOP_KEY + strconv.Itoa(int(id))
+	isLock := tryLock(LockKey)
+	//判断是否获取
+	if !isLock {
+		//失败，休眠并重试
+		time.Sleep(5 * time.Microsecond)
+		return queruWithMutex(id)
+	}
+	//成功，根据id查询数据库
+	shop := models.QueryShopByid(id)
+	//不存在，返回错误,并将空值写入redis
+	if shop == nil {
+		gredis.Client.SetEX(context.Background(), key, utils.CACHE_NULL_TTL, time.Minute)
+		return nil, nil
+	}
+	//存在，写入redis
+	bJson, _ := json.Marshal(*shop)
+	JsonStr := string(bJson)
+	gredis.Client.Set(context.Background(), key, JsonStr, time.Minute)
+	unLock(LockKey)
+	return shop, nil
+}
+
+func tryLock(key string) bool {
+	flag, _ := gredis.Client.SetNX(context.Background(), key, "1", 10*time.Second).Result()
+	return flag
+}
+
+func unLock(key string) {
+	gredis.Client.Del(context.Background(), key)
 }
 
 func (shopServiceImpl *ShopServiceImpl) Update(shop models.Shop) result.Result {

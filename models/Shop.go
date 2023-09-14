@@ -20,7 +20,7 @@ type Shop struct {
 	Sold       int       `json:"sold"`
 	Comments   int       `json:"comments"`
 	Score      int       `json:"score"`
-	OpenHours  string    `json:"opneHours"`
+	OpenHours  string    `json:"openHours"`
 	CreateTime time.Time `json:"createTime"`
 	UpdateTime time.Time `json:"updateTime"`
 	Distance   float64   `gorm:"-"`
@@ -37,4 +37,13 @@ func QueryShopsByIds(idStr string, idStrArr []string) []Shop {
 	db.Table("tb_shop").Where("id in (?)", idStrArr).Order("FIELD(id," + idStr + ")").Find(&shops)
 	fmt.Println(shops)
 	return shops
+}
+
+func QueryShopByid(id int64) *Shop {
+	var shop Shop
+	res := db.Table("tb_shop").Where("id = ?", id).First(&shop)
+	if res.RecordNotFound() {
+		return nil
+	}
+	return &shop
 }
