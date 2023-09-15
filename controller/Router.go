@@ -35,6 +35,9 @@ func InitRouter() *gin.Engine {
 	blogGroup.GET("/of/me", blog.QueryMyBlog)
 	blogGroup.GET("/:id", blog.QueryBlogById)
 	blogGroup.GET("/of/user", blog.QueryBlogByUserId)
+	blogGroup.GET("/of/follow", blog.QueryBlogOfFollow)
+	blogGroup.GET("/likes/:id", blog.QueryBlogLike)
+	blogGroup.PUT("/like/:id", blog.LikeBlog)
 
 	followGroup := r.Group("/follow")
 	followGroup.PUT("/:id/:isFollow", follow.Follow)

@@ -57,6 +57,54 @@ func QueryBlogByUserId(c *gin.Context) {
 func QueryBlogById(c *gin.Context) {
 	sid := c.Param("id")
 	id, _ := strconv.Atoi(sid)
-	res := blogService.QueryBlogById(id)
+	session := sessions.Default(c)
+	cookie, _ := c.Cookie("user_cookie")
+	phone := session.Get(cookie)
+	res := blogService.QueryBlogById(id, phone.(string))
+	c.JSON(http.StatusOK, res)
+}
+
+func QueryBlogOfFollow(c *gin.Context) {
+	smax := c.Query("lastId")
+	sOffset := c.DefaultQuery("offset", "0")
+	max, err := strconv.Atoi(smax)
+	if err != nil {
+		c.JSON(http.StatusBadGateway, result.Fail(err.Error()))
+		return
+	}
+	offset, err2 := strconv.Atoi(sOffset)
+	if err2 != nil {
+		c.JSON(http.StatusBadGateway, result.Fail(err2.Error()))
+		return
+	}
+	session := sessions.Default(c)
+	cookie, _ := c.Cookie("user_cookie")
+	phone := session.Get(cookie)
+	res := blogService.QueryBlogOfFollow(int64(max), int64(offset), phone.(string))
+	c.JSON(http.StatusOK, res)
+}
+
+func QueryBlogLike(c *gin.Context) {
+	sid := c.Param("id")
+	id, err := strconv.Atoi(sid)
+	if err != nil {
+		c.JSON(http.StatusBadGateway, result.Fail(err.Error()))
+		return
+	}
+	res := blogService.QueryBlogLike(id)
+	c.JSON(http.StatusOK, res)
+}
+
+func LikeBlog(c *gin.Context) {
+	sid := c.Param("id")
+	id, err := strconv.Atoi(sid)
+	session := sessions.Default(c)
+	cookieId, _ := c.Cookie("user_cookie")
+	if err != nil {
+		c.JSON(http.StatusBadGateway, result.Fail(err.Error()))
+		return
+	}
+	phone := session.Get(cookieId)
+	res := blogService.LikeBlog(int64(id), phone.(string))
 	c.JSON(http.StatusOK, res)
 }

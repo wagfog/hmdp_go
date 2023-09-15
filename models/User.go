@@ -51,3 +51,9 @@ func CreateUser(phone string) (*User, error) {
 	})
 	return &u, err
 }
+
+func QueryUsersByIds(idStr string, idStrArr []string) []User {
+	var users []User
+	db.Table("tb_user").Where("id in (?)", idStrArr).Order("FIELD(id," + idStr + ")").Find(&users)
+	return users
+}

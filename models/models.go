@@ -10,6 +10,7 @@ import (
 )
 
 var db *gorm.DB
+var Db *gorm.DB
 
 func Init() {
 	var (
@@ -38,7 +39,7 @@ func Init() {
 	gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
 		return tablePrefix + defaultTableName
 	}
-
+	Db = db
 	db.SingularTable(true)
 	db.LogMode(true)
 	db.DB().SetMaxIdleConns(10)

@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/jinzhu/gorm"
 	"github.com/wagfog/hmdp_go/utils"
 )
 
@@ -38,4 +39,18 @@ func QueryBlogById(id int) *Blog {
 	var blogs Blog
 	db.Table("tb_blog").Where("id = ?", id).First(&blogs)
 	return &blogs
+}
+
+func QueryBlogByIds(ids []string, strIds string) []Blog {
+	var blogs []Blog
+	db.Table("tb_blog").Where("id in ?", ids).Order("FIELD(id," + strIds + ")").First(&blogs)
+	return blogs
+}
+
+func UpdateBlogLikePlus(id int) {
+	db.Table("tb_blog").Where("id = ?", id).Update("liked", gorm.Expr("liked + ?", 1))
+}
+
+func UpdateBlogLikeSub(id int) {
+	db.Table("tb_blog").Where("id = ?", id).Update("liked", gorm.Expr("liked - ?", 1))
 }
