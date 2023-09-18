@@ -4,6 +4,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
+	voucher "github.com/wagfog/hmdp_go/controller/Voucher"
 	"github.com/wagfog/hmdp_go/controller/blog"
 	"github.com/wagfog/hmdp_go/controller/follow"
 	"github.com/wagfog/hmdp_go/controller/shop"
@@ -29,6 +30,10 @@ func InitRouter() *gin.Engine {
 	shopGroup := r.Group("/shop")
 	shopGroup.GET("/of/type", shop.QueryShopByType)
 	shopGroup.GET("/:id", shop.QueryShopById)
+
+	voucherGroup := r.Group("/voucher")
+	voucherGroup.GET("/list/:shopId", voucher.QueryVoucherOfShop)
+	voucherGroup.POST("/seckill", voucher.AddSeckillVoucher)
 
 	blogGroup := r.Group("/blog")
 	blogGroup.GET("/hot", blog.QueryHotBlogController)
