@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/wagfog/hmdp_go/config/gredis"
+	"github.com/wagfog/hmdp_go/config/rabbitmq"
 	"github.com/wagfog/hmdp_go/config/setting"
 	"github.com/wagfog/hmdp_go/controller"
 	"github.com/wagfog/hmdp_go/controller/blog"
@@ -14,6 +15,8 @@ import (
 
 func main() {
 	setting.Init()
+	rabbitmq.Init_Rabbitmq()
+	defer rabbitmq.Mq_Conn.Close()
 	models.Init()
 	gredis.Setup()
 	user.Init()

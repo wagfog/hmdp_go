@@ -27,7 +27,14 @@ type Redis struct {
 	IdleTimeout time.Duration
 }
 
+type RabbitMQ struct {
+	Username string
+	PassWord string
+	Host     string
+}
+
 var RedisSetting = &Redis{}
+var RabbitMQSetting = &RabbitMQ{}
 
 func Init() {
 	var err error
@@ -38,6 +45,10 @@ func Init() {
 	Load_Base()
 	Load_Server()
 	Load_APP()
+}
+
+func Load_mq() {
+	mapTo("rabbitmq", RabbitMQSetting)
 }
 
 func Load_Base() {
@@ -61,7 +72,7 @@ func Load_Server() {
 func Load_APP() {
 	sec, err := Cfg.GetSection("app")
 	if err != nil {
-		log.Fatal("Fail to get section 'server' : %v", err)
+		log.Fatalf("Fail to get section 'server' : %v", err)
 	}
 	sec.Key("JWT_SECRET").MustString("!@)*#)!@U#@*!@!)")
 }
@@ -69,6 +80,6 @@ func Load_APP() {
 func mapTo(section string, v interface{}) {
 	err := Cfg.Section(section).MapTo(v)
 	if err != nil {
-		log.Fatal("Cfg.Maptp %s err: %v", section, err)
+		log.Fatalf("Cfg.Maptp %s err: %v", section, err)
 	}
 }
