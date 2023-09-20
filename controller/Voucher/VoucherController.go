@@ -40,6 +40,7 @@ func AddSeckillVoucher(c *gin.Context) {
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusBadRequest, result.Fail(err.Error()))
+		return
 	}
 	voucherService.AddSeckillVoucher(voucher)
 	c.JSON(http.StatusOK, result.Ok())

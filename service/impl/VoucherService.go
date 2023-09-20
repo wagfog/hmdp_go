@@ -38,5 +38,5 @@ func (voucherService *VoucherService) AddSeckillVoucher(voucher models.Voucher) 
 	return *result.Ok()
 }
 func (voucherService *VoucherService) SeckillVoucher(voucherId int) result.Result {
-	return *result.Ok()
+	return *result.Fail("not finish")
 }

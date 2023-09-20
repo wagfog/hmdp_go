@@ -6,7 +6,7 @@ import (
 )
 
 type IVoucherOrderService interface {
-	SeckillVoucher(voucherId int) result.Result
+	SeckillVoucher(voucherId int, phone string) result.Result
 
 	CreateVoucherOrder(voucherOrder models.VoucherOrder, phone string)
 }

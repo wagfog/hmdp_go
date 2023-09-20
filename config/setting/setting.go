@@ -45,6 +45,7 @@ func Init() {
 	Load_Base()
 	Load_Server()
 	Load_APP()
+	Load_mq()
 }
 
 func Load_mq() {

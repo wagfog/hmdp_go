@@ -24,6 +24,7 @@ func Init_Rabbitmq() {
 		setting.RabbitMQSetting.PassWord,
 		setting.RabbitMQSetting.Host,
 	)
+	fmt.Println(url)
 	var err error
 	Mq_Conn, err = amqp.Dial(url)
 	failOnError(err, "Failed to connect to RabbitMQ")

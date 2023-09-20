@@ -35,6 +35,9 @@ func InitRouter() *gin.Engine {
 	voucherGroup.GET("/list/:shopId", voucher.QueryVoucherOfShop)
 	voucherGroup.POST("/seckill", voucher.AddSeckillVoucher)
 
+	voucherOrderGroup := r.Group("/voucher-order")
+	voucherOrderGroup.POST("/seckill/:id", voucher.SeckillVoucher)
+
 	blogGroup := r.Group("/blog")
 	blogGroup.GET("/hot", blog.QueryHotBlogController)
 	blogGroup.GET("/of/me", blog.QueryMyBlog)

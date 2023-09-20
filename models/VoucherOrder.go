@@ -30,7 +30,7 @@ func CreateVoucherOrder(uid int, v VoucherOrder) bool {
 	}
 
 	//扣减库存
-	res := tx.Table("tb_voucher_order").Where("voucher_id = ?", v.ID).
+	res := tx.Table("tb_seckill_voucher").Where("voucher_id = ?", v.VoucherID).
 		Where("stock > 0").
 		Update("stock", gorm.Expr("stock - ?", 1))
 

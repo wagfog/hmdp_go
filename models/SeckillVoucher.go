@@ -14,3 +14,9 @@ type SeckillVoucher struct {
 func SaveSeckillVoucher(v *SeckillVoucher) {
 	db.Table("tb_seckill_voucher").Create(v)
 }
+
+func QuerySeckillVoucherOfShop(shopId int) []SeckillVoucher {
+	var vouchers []SeckillVoucher
+	db.Table("tb_seckill_voucher").Where("shop_id = ?", shopId).Find(&vouchers)
+	return vouchers
+}

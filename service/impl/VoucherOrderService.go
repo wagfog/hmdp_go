@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"time"
 
 	"github.com/streadway/amqp"
 	lua "github.com/wagfog/hmdp_go/config/Lua"
@@ -40,7 +41,7 @@ func publish(body []byte) {
 	failOnError(err, "Failed to publish a message")
 }
 
-func consume() {
+func Consumer() {
 	msgs, err := rabbitmq.Ch.Consume(
 		rabbitmq.Que.Name, // queue
 		"",                // consumer
@@ -51,6 +52,7 @@ func consume() {
 		nil,               // args
 	)
 	failOnError(err, "Failed to register a consumer")
+	forever := make(chan bool)
 
 	for msg := range msgs {
 		mesg := make(map[string]string)
@@ -66,12 +68,23 @@ func consume() {
 			VoucherID: int64(Voucherid),
 			UserID:    int64(userid),
 		}
-		HandelVoucher(vOrder)
+		HandelVoucher(vOrder, userid)
 	}
+	<-forever
 }
 
-func HandelVoucher(voucherOrder models.VoucherOrder) {
-
+func HandelVoucher(voucherOrder models.VoucherOrder, userid int) {
+	key := "lock:order:" + strconv.Itoa(userid)
+	flag, err := gredis.Client.SetNX(context.Background(), key, 1, time.Second).Result()
+	failOnError(err, "get lock error")
+	if !flag {
+		fmt.Println("不允许重复下单")
+	} else {
+		vos := VoucherOrderService{}
+		user := models.GetUserById(int64(userid))
+		vos.CreateVoucherOrder(voucherOrder, user.Phone)
+	}
+	gredis.Client.Del(context.Background(), key)
 }
 
 func CreateSript() {
@@ -83,12 +96,8 @@ func CreateSript() {
 	}
 }
 
-func NewVoucherOrderService(vs *VoucherOrderService) bool {
-	if vs != nil {
-		return false
-	}
-	vs = &VoucherOrderService{}
-	return true
+func NewVoucherOrderService() *VoucherOrderService {
+	return &VoucherOrderService{}
 }
 
 func (v *VoucherOrderService) SeckillVoucher(voucherId int, phone string) result.Result {
@@ -98,9 +107,9 @@ func (v *VoucherOrderService) SeckillVoucher(voucherId int, phone string) result
 	orderID := utils.NextId("order")
 	id := strconv.Itoa(int(u.ID))
 	vid := strconv.Itoa(voucherId)
+	fmt.Println("*********", vid)
 	sorderID := strconv.Itoa(int(orderID))
-	n, err := gredis.Client.EvalSha(context.Background(), seckillHash, []string{id, vid, sorderID}).Result()
-
+	n, err := gredis.Client.EvalSha(context.Background(), seckillHash, []string{vid, id, sorderID}).Result()
 	if err != nil {
 		panic(err)
 	}
@@ -109,6 +118,7 @@ func (v *VoucherOrderService) SeckillVoucher(voucherId int, phone string) result
 	} else if n == 2 {
 		return *result.Fail("重复下单")
 	}
+	// return *result.Fail("test")
 	mesg := make(map[string]string)
 	mesg["userId"] = id
 	mesg["voucherId"] = vid
@@ -118,12 +128,11 @@ func (v *VoucherOrderService) SeckillVoucher(voucherId int, phone string) result
 	return *result.OkWithData(orderID)
 }
 
-func (v *VoucherOrderService) CreateVoucherOrder(voucherOrder models.VoucherOrder, phone string) result.Result {
+func (v *VoucherOrderService) CreateVoucherOrder(voucherOrder models.VoucherOrder, phone string) {
 	u := models.GetUserByPhone(phone)
 	flag := models.CreateVoucherOrder(int(u.ID), voucherOrder)
 	if flag {
-		return *result.Ok()
+		return
 	}
 	fmt.Println("库存不足！")
-	return *result.Fail("库存不足！")
 }
