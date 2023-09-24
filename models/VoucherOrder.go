@@ -9,14 +9,14 @@ import (
 
 type VoucherOrder struct {
 	ID         int64     `json:"id" gorm:"primaryKey;autoIncrement"`
-	UserID     int64     `json:"userId"`
-	VoucherID  int64     `json:"voucherId"`
-	PayType    int       `json:"payType"`
+	UserID     int64     `json:"userId" gorm:"column:user_id"`
+	VoucherID  int64     `json:"voucherId" gorm:"column:voucher_id"`
+	PayType    int       `json:"payType" gorm:"column:pay_type"`
 	Status     int       `json:"status"`
-	CreateTime time.Time `json:"createTime"`
-	PayTime    time.Time `json:"payTime"`
-	RefundTime time.Time `json:"refundTime"`
-	UpdateTime time.Time `json:"updateTime"`
+	CreateTime time.Time `json:"createTime" gorm:"column:create_time"`
+	PayTime    time.Time `json:"payTime" gorm:"column:use_time"`
+	RefundTime time.Time `json:"refundTime" gorm:"refund_time"`
+	UpdateTime time.Time `json:"updateTime" gorm:"column:update_time"`
 }
 
 func CreateVoucherOrder(uid int, v VoucherOrder) bool {

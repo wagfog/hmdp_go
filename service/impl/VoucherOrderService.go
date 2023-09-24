@@ -113,9 +113,9 @@ func (v *VoucherOrderService) SeckillVoucher(voucherId int, phone string) result
 	if err != nil {
 		panic(err)
 	}
-	if n == 1 {
+	if n.(int64) == 1 {
 		return *result.Fail("库存不足")
-	} else if n == 2 {
+	} else if n.(int64) == 2 {
 		return *result.Fail("重复下单")
 	}
 	// return *result.Fail("test")
@@ -130,6 +130,9 @@ func (v *VoucherOrderService) SeckillVoucher(voucherId int, phone string) result
 
 func (v *VoucherOrderService) CreateVoucherOrder(voucherOrder models.VoucherOrder, phone string) {
 	u := models.GetUserByPhone(phone)
+	voucherOrder.CreateTime = time.Now()
+	voucherOrder.UpdateTime = time.Now()
+	voucherOrder.PayTime = time.Now()
 	flag := models.CreateVoucherOrder(int(u.ID), voucherOrder)
 	if flag {
 		return

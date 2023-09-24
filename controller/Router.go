@@ -15,6 +15,7 @@ import (
 func InitRouter() *gin.Engine {
 	r := gin.New()
 
+	r.Use(gin.Logger())
 	r.Use(sessions.Sessions("mysession", utils.Redistore))
 	userGroup := r.Group("/user")
 	userGroup.POST("/code", user.SendCode)
@@ -36,10 +37,13 @@ func InitRouter() *gin.Engine {
 	voucherGroup.POST("/seckill", voucher.AddSeckillVoucher)
 
 	voucherOrderGroup := r.Group("/voucher-order")
+	voucherOrderGroup.Use(CookieAuth())
 	voucherOrderGroup.POST("/seckill/:id", voucher.SeckillVoucher)
 
 	blogGroup := r.Group("/blog")
-	blogGroup.GET("/hot", blog.QueryHotBlogController)
+	blogGroup.Use(CookieAuth())
+	// blogGroup.GET("/hot", blog.QueryHotBlogController)
+	r.GET("/blog/hot", blog.QueryHotBlogController)
 	blogGroup.GET("/of/me", blog.QueryMyBlog)
 	blogGroup.GET("/:id", blog.QueryBlogById)
 	blogGroup.GET("/of/user", blog.QueryBlogByUserId)
@@ -48,7 +52,13 @@ func InitRouter() *gin.Engine {
 	blogGroup.PUT("/like/:id", blog.LikeBlog)
 
 	followGroup := r.Group("/follow")
+	followGroup.Use(CookieAuth())
 	followGroup.PUT("/:id/:isFollow", follow.Follow)
 	followGroup.GET("/or/not/:id", follow.IsFollow)
+
+	uploadGroup := r.Group("/upload")
+	uploadGroup.Use(CookieAuth())
+	uploadGroup.POST("/blog")
+
 	return r
 }
